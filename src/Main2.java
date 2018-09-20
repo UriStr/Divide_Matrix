@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Scanner;
 
-public class Main {
+public class Main2 {
 
     public static boolean hasEveryMatrixOnlyOneO(ArrayList<ArrayList<char[]>> inputMatrixArr) {
         int oNum = 0, inputArraySize = inputMatrixArr.size();
@@ -159,6 +159,12 @@ public class Main {
 
         //выходной список массивов
         ArrayList<ArrayList<char[]>> listOfOutputMatrix = new ArrayList<>();
+        ArrayList<Integer> forSortHorizontally = new ArrayList<>();
+        forSortHorizontally.add(0);
+        ArrayList<Integer> forSortVertically = new ArrayList<>();
+        forSortVertically.add(0);
+        ArrayList<Integer> tempForSortHorizontally = new ArrayList<>();
+        ArrayList<Integer> tempForSortVertically = new ArrayList<>();
 
         //берем тестовый вариант из файла
         ArrayList<char[]> inputMatrix = new ArrayList<>();
@@ -199,20 +205,20 @@ public class Main {
             }
         }
 
-        Iterator<char[]> iterator = inputMatrix.iterator();
+        /*Iterator<char[]> iterator = inputMatrix.iterator();
 
         while (iterator.hasNext()) {
             System.out.println(iterator.next());
         }
-        System.out.println("Columns: " + colNum + ", Lines: " + linNum + ", oNum: " + oNum);
+        System.out.println("Columns: " + colNum + ", Lines: " + linNum + ", oNum: " + oNum);*/
 
         int inputMatrixS = colNum * linNum;
         int outputSperMatrix = inputMatrixS / oNum;
 
-        System.out.print("Sinput: " + inputMatrixS + " SperMatrix: " + outputSperMatrix);
+        /*System.out.print("Sinput: " + inputMatrixS + " SperMatrix: " + outputSperMatrix);
 
 
-        System.out.println("\n__________\nВывод нашей дичи:\n");
+        System.out.println("\n__________\nВывод нашей дичи:\n");*/
 
         /*System.out.println("Проверка vertical раздел на:  \n");
         ArrayList<ArrayList<char[]>> temp = splitVerticallyfromLeftOn(inputMatrix, 5);
@@ -234,9 +240,14 @@ public class Main {
         boolean flag = false;
 
         do {
+            tempForSortHorizontally.clear();
+            tempForSortVertically.clear();
             flag = false;
             ArrayList<ArrayList<char[]>> innerOutputList = new ArrayList<>();
             ArrayList<ArrayList<char[]>> tempOutputListBuilder = new ArrayList<>();
+            Iterator<Integer> forHorIterator = forSortHorizontally.iterator();
+            Iterator<Integer> forVertIterator = forSortVertically.iterator();
+            int indexOfNextMatrix = 0;
 
             if (listOfOutputMatrix.isEmpty()) {
                 innerOutputList.add(inputMatrix);
@@ -263,6 +274,10 @@ public class Main {
 
                 if (hasThisMatrixOnlyOneO(nextMatrix)) {
                     tempOutputListBuilder.add(nextMatrix);
+                    tempForSortHorizontally.add(forSortHorizontally.get(indexOfNextMatrix));
+                    tempForSortVertically.add(forSortVertically.get(indexOfNextMatrix));
+
+                    indexOfNextMatrix++;
                     continue;
                 }
 
@@ -284,11 +299,35 @@ public class Main {
                     tempInnerOutputList.addAll(splitHorizontallyfromTopOn(nextMatrix, i));
 
                     if (hasEveryMatrixCorrectSperO(tempInnerOutputList, outputSperMatrix)) {
+                        if (indexOfNextMatrix < forSortHorizontally.size()) {
+                            tempForSortHorizontally.add(forSortHorizontally.get(indexOfNextMatrix));
+                            tempForSortHorizontally.add(forSortHorizontally.get(indexOfNextMatrix) + i);
+                            if (indexOfNextMatrix < forSortVertically.size()) {
+                                tempForSortVertically.add(forSortVertically.get(indexOfNextMatrix));
+                                tempForSortVertically.add(forSortVertically.get(indexOfNextMatrix));
+                            } else {
+                                tempForSortVertically.add(0);
+                                tempForSortVertically.add(0);
+                            }
+
+                        } else {
+                            tempForSortHorizontally.add(0);
+                            tempForSortHorizontally.add(i);
+                            if (indexOfNextMatrix < forSortVertically.size()) {
+                                tempForSortVertically.add(forSortVertically.get(indexOfNextMatrix));
+                                tempForSortVertically.add(forSortVertically.get(indexOfNextMatrix));
+                            } else {
+                                tempForSortVertically.add(0);
+                                tempForSortVertically.add(0);
+                            }
+                        }
+
                         innerFlag1 = true;
                         tempOutputListBuilder.addAll(tempInnerOutputList);
                         break;
                     }
                     if (innerFlag1) {
+                        indexOfNextMatrix++;
                         break;
                     }
 
@@ -305,12 +344,37 @@ public class Main {
                     tempInnerOutputList.addAll(splitVerticallyfromLeftOn(nextMatrix, i));
 
                     if (hasEveryMatrixCorrectSperO(tempInnerOutputList, outputSperMatrix)) {
+
+                        if (indexOfNextMatrix < forSortVertically.size()) {
+                            tempForSortVertically.add(forSortVertically.get(indexOfNextMatrix));
+                            tempForSortVertically.add(forSortVertically.get(indexOfNextMatrix) + i);
+                            if (indexOfNextMatrix < forSortHorizontally.size()) {
+                                tempForSortHorizontally.add(forSortHorizontally.get(indexOfNextMatrix));
+                                tempForSortHorizontally.add(forSortHorizontally.get(indexOfNextMatrix));
+                            } else {
+                                tempForSortHorizontally.add(0);
+                                tempForSortHorizontally.add(0);
+                            }
+
+                        } else {
+                            tempForSortVertically.add(0);
+                            tempForSortVertically.add(i);
+                            if (indexOfNextMatrix < forSortHorizontally.size()) {
+                                tempForSortHorizontally.add(forSortHorizontally.get(indexOfNextMatrix));
+                                tempForSortHorizontally.add(forSortHorizontally.get(indexOfNextMatrix));
+                            } else {
+                                tempForSortHorizontally.add(0);
+                                tempForSortHorizontally.add(0);
+                            }
+                        }
+
                         innerFlag2 = true;
                         tempOutputListBuilder.addAll(tempInnerOutputList);
                         break;
                     }
 
                     if (innerFlag2) {
+                        indexOfNextMatrix++;
                         break;
                     }
 
@@ -320,13 +384,24 @@ public class Main {
                     //tempOutputListBuilder.addAll(tempInnerOutputList);
                     continue;
                 } else {
+                    tempForSortHorizontally.add(forSortHorizontally.get(indexOfNextMatrix));
+                    tempForSortVertically.add(forSortVertically.get(indexOfNextMatrix));
                     tempOutputListBuilder.add(nextMatrix);
+                    indexOfNextMatrix++;
                     continue;
                 }
 
 
 
             }
+
+            forSortHorizontally.clear();
+            forSortHorizontally.addAll(tempForSortHorizontally);
+            //tempForSortHorizontally.clear();
+
+            forSortVertically.clear();
+            forSortVertically.addAll(tempForSortVertically);
+            //tempForSortVertically.clear();
 
             //проверяем дало ли что-то разделение. если дало - флаг в true  переписываем выходной поток, если нет - не трогаем флаг и текущий выходной поток
             if (listOfOutputMatrix.size() != tempOutputListBuilder.size()) {
@@ -347,9 +422,9 @@ public class Main {
                 }
                 System.out.println();
             }
+            System.out.println("Sort Arr Horizontally: " + forSortHorizontally);
+            System.out.println("Sort Arr Vertically: " + forSortVertically);
             System.exit(0);
-        } else {
-            System.out.println("Решений нет мазафака");
         }
 
     }
